@@ -1,0 +1,32 @@
+---
+- hosts: all
+  tasks:
+    - lineinfile: dest=/etc/lightdm/lightdm.conf regexp="^#?xserver-command=.*$" insertafter="^[SeatDefaults]" line="xserver-command=X -s 0 dpms"
+      sudo: yes
+    - replace: dest=/boot/config.txt backup=no regexp="^#?disable_overscan=1" replace="disable_overscan=1"
+      sudo: yes
+
+    - apt: name={{item}} state=installed
+      with_items:
+        - x11vnc
+        - chromium
+      sudo: yes
+
+    - name: install autostart applications
+      template: src="{{item}}" dest="/home/pi/.config/autostart/{{item}}"
+      with_items:
+        - x11vnc.desktop
+        - chromium.desktop
+
+    - name: set chromium to full screen
+      replace: >
+        dest=/home/pi/.config/chromium/Default/Preferences regexp='"{{item.key}}": .+,' replace='"{{item.key}}": {{item.value}},'
+      with_dict:
+        bottom: 1080
+        work_area_bottom: 1080
+        left: 0
+        work_area_left: 0
+        right: 1920
+        work_area_right: 1920
+        work_area_top: 0
+        maximized: 'true'

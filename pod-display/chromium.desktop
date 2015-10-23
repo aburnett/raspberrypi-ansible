@@ -1,0 +1,4 @@
+[Desktop Entry]
+Type=Application
+Name=Chromium
+Exec=chromium http://mm-refactoids.dt.inc
